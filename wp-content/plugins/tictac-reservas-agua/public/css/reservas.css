@@ -1,0 +1,1427 @@
+/**
+ * TicTac Reservas Agua - Frontend Booking Styles
+ * v1.5 — Select estilizado, flechas calendario SVG, botón done con estado
+ */
+
+/* ═══════════════════════════════════════
+   CSS VARIABLES
+   ═══════════════════════════════════════ */
+:root {
+    --ttra-primary: #213975;
+    --ttra-secondary: #27A5DE;
+    --ttra-accent: #FF5E00;
+    --ttra-bg: #E8F4FD;
+    --ttra-white: #FFFFFF;
+    --ttra-gray-100: #F7F9FC;
+    --ttra-gray-200: #E2E8F0;
+    --ttra-gray-400: #94A3B8;
+    --ttra-gray-600: #64748B;
+    --ttra-gray-800: #1E293B;
+    --ttra-success: #22C55E;
+    --ttra-error: #EF4444;
+    --ttra-radius: 12px;
+    --ttra-radius-sm: 8px;
+    --ttra-radius-full: 999px;
+    --ttra-shadow: 0 2px 12px rgba(0, 59, 111, 0.08);
+    --ttra-shadow-lg: 0 8px 32px rgba(0, 59, 111, 0.12);
+    --ttra-font-display: 'Bebas Neue', Impact, sans-serif;
+    --ttra-font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --ttra-transition: 0.25s ease;
+}
+
+/* ═══════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════ */
+.ttra-app {
+    font-family: var(--ttra-font-body);
+    color: var(--ttra-gray-800);
+    line-height: 1.5;
+    margin: 0 auto;
+}
+
+.ttra-app *,
+.ttra-app *::before,
+.ttra-app *::after {
+    box-sizing: border-box;
+}
+
+/* ═══════════════════════════════════════
+   STEPPER
+   ═══════════════════════════════════════ */
+.ttra-stepper {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    padding: 16px 0;
+    position: sticky;
+    top: 105px;
+    z-index: 9999;
+}
+
+.ttra-stepper__step {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 12px;
+    border-radius: 50px;
+    background: var(--ttra-white);
+    cursor: default;
+    box-shadow: 0 10px 15px -3px rgba(36, 36, 34, .25), 0 4px 6px -4px rgba(36, 36, 34, .25);
+    transition: background var(--ttra-transition), color var(--ttra-transition);
+    text-align: center;
+}
+
+.ttra-stepper__icon {
+    width: 40px;
+    height: 40px;
+    display: none;
+    object-fit: contain;
+}
+
+.ttra-stepper__step:not(.ttra-stepper__step--active):not(.ttra-stepper__step--completed) .ttra-stepper__icon--pending {
+    display: block;
+}
+
+.ttra-stepper__step--active .ttra-stepper__icon--active {
+    display: block;
+}
+
+.ttra-stepper__step--completed .ttra-stepper__icon--completed {
+    display: block;
+}
+
+.ttra-stepper__label {
+    font-family: "Genos";
+    font-size: 25px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+    color: #213975;
+}
+
+.ttra-stepper__step--active {
+    background: #27A5DE;
+}
+
+.ttra-stepper__step--active .ttra-stepper__label {
+    color: white;
+}
+
+.ttra-stepper__step--completed {
+    background: #213975;
+}
+
+.ttra-stepper__step--completed .ttra-stepper__label {
+    color: #27A5DE;
+}
+
+@media (max-width: 768px) {
+    .ttra-stepper {
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 0px;
+        top: 90px;
+    }
+
+    .ttra-stepper__step {
+        flex: 1 1 calc(50% - 6px);
+        padding: 10px 8px;
+        border-radius: 20px;
+    }
+
+    .ttra-stepper__icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .ttra-stepper__label {
+        font-size: 16px;
+    }
+}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════ */
+.ttra-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 32px;
+    align-items: start;
+}
+
+.ttra-layout__sidebar {
+    position: sticky;
+    top: 220px;
+    align-self: start;
+}
+
+@media (max-width: 960px) {
+    .ttra-layout {
+        grid-template-columns: 1fr;
+        margin-top: 115px;
+    }
+
+    .ttra-layout__sidebar {
+        position: static;
+        top: auto;
+
+    }
+}
+
+/* ═══════════════════════════════════════
+   STEPS
+   ═══════════════════════════════════════ */
+.ttra-step {
+    animation: ttraFadeIn 0.35s ease;
+}
+
+.ttra-step--hidden {
+    display: none !important;
+}
+
+@keyframes ttraFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ttra-step__title {
+    font-family: "Genos", sans-serif;
+    font-size: 42px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 70%;
+    color: #213975;
+    margin-bottom: 20px;
+}
+
+.ttra-step__desc {
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 2px;
+    color: black;
+    margin: 20px 0;
+}
+
+.ttra-step__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--ttra-gray-200);
+}
+
+.ttra-step__actions--between {
+    justify-content: space-between;
+}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════ */
+.ttra-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: 2px solid transparent;
+    border-radius: var(--ttra-radius-full);
+    font-family: var(--ttra-font-display);
+    font-size: 16px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all var(--ttra-transition);
+    text-transform: uppercase;
+}
+
+.ttra-btn--primary {
+    background: #ff5e00;
+    background-color: #ff5e00;
+    color: white;
+    box-shadow: 0 2.5px 5px 0 rgba(36, 36, 34, 0.60);
+    font-family: "Montserrat";
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 20px;
+    letter-spacing: 1px;
+    transition: all .3s ease;
+}
+
+.ttra-btn--primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: #27A5DE;
+    background-color: #27A5DE;
+}
+
+.ttra-btn--primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ttra-btn--outline {
+    border-radius: 50px;
+    border: 2px solid #213975;
+    background: rgba(255, 255, 255, 0.50);
+    backdrop-filter: blur(6px);
+    color: #213975;
+    font-family: "Montserrat";
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 20px;
+    letter-spacing: 1px;
+}
+
+.ttra-btn--outline:hover:not(:disabled) {
+    background: var(--ttra-bg);
+}
+
+.ttra-btn--sidebar-cta {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+/* Botón "Selección finalizada" — estado disabled por defecto */
+.ttra-btn--done {
+    margin-top: 16px;
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+    padding: 12px;
+
+    /* Estado desactivado */
+    background: rgba(255, 255, 255, 0.50);
+    color: #a0aec0;
+    border: 2px solid #cbd5e0;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transition: all var(--ttra-transition);
+
+    /* Desktop Text/CTAs XPERIENCE (Desktop) */
+    font-family: "Montserrat";
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: 20px;
+    /* 133.333% */
+    letter-spacing: 1px;
+}
+
+/* Estado activo del botón "Selección finalizada" */
+.ttra-btn--done.ttra-btn--done-active {
+    background: var(--ttra-secondary);
+    color: var(--ttra-white);
+    opacity: 1;
+    cursor: default;
+    box-shadow: 0 2.5px 5px 0 rgba(36, 36, 34, 0.60);
+    border: 0px !important;
+}
+
+/* ═══════════════════════════════════════
+   CUSTOM SELECT — Diseño pill estilizado
+   ═══════════════════════════════════════ */
+
+/* Wrapper para el select estilizado */
+.ttra-select-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.ttra-select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 30px;
+    background: #213975;
+    border-radius: 0 10px 10px 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none'%3E%3Cpath d='M1 1L7 7L13 1' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ttra-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 8px 44px 8px 14px;
+    border: 2px solid var(--ttra-gray-200);
+    border-radius: 10px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #213975;
+    background: var(--ttra-white);
+    cursor: pointer;
+    min-width: 80px;
+    outline: none;
+    transition: border-color var(--ttra-transition);
+}
+
+.ttra-select:focus {
+    border-color: var(--ttra-secondary);
+}
+
+.ttra-select--sm {
+    padding: 6px 35px 6px 12px;
+    font-size: 16px;
+    min-width: 80px;
+}
+
+/* Select de slots con label horizontal */
+.ttra-slots-section {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ttra-slots-label {
+    color: var(--Azul-01-XPERIENCE, #213975);
+    font-family: "Genos";
+    font-size: 25px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* El select de slots ocupa el espacio restante */
+.ttra-select-wrapper--slots {
+    flex: 1;
+}
+
+.ttra-select-wrapper--slots .ttra-select {
+    width: 100%;
+}
+
+/* Select de configuración de actividad (personas/sesiones) */
+.ttra-activity-card__config .ttra-select-wrapper {
+    display: inline-flex;
+}
+
+/* ═══════════════════════════════════════
+   CATEGORY FILTERS
+   ═══════════════════════════════════════ */
+.ttra-categories {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 10px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    align-items: center;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 30px;
+}
+
+.ttra-cat-btn {
+    font-size: 15px;
+    opacity: 0.5;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-radius: 20px;
+    background: #27A5DE;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .5);
+    flex: 1 1 auto;
+    white-space: nowrap;
+    padding: 7px 16px;
+    text-align: center;
+    transition: background .2s ease;
+    border: 0 !important;
+    font-family: "Montserrat", sans-serif;
+}
+
+.ttra-cat-btn--active,
+.ttra-cat-btn:hover {
+    background: var(--ttra-secondary);
+    color: var(--ttra-white);
+    opacity: 1;
+}
+
+/* ═══════════════════════════════════════
+   ACTIVITY CARDS
+   ═══════════════════════════════════════ */
+.ttra-activities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ttra-activity-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 24px;
+    z-index: 99;
+    border: 2px solid #27A5DE;
+    border-radius: 40px;
+    background: white;
+    transition: all var(--ttra-transition);
+    filter: drop-shadow(0 0 5px rgba(36, 36, 34, 0.25));
+}
+
+.ttra-activity-card:hover {
+    border-color: var(--ttra-secondary);
+    box-shadow: var(--ttra-shadow);
+}
+
+.ttra-activity-card--premium {
+    border-color: #27A5DE;
+    background: #E8F4FD;
+}
+
+.ttra-activity-card--premium:hover {
+    border-color: #213975;
+    box-shadow: 0 4px 16px rgba(39, 165, 222, 0.25);
+}
+
+.ttra-activity-card--premium .ttra-price {
+    color: #213975;
+}
+
+.ttra-activity-card--premium input[type="checkbox"] {
+    accent-color: #27A5DE;
+}
+
+.ttra-activity-card_left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+.ttra-activity-card_right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+}
+
+.ttra-activity-card__check {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.ttra-activity-card__check input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--ttra-secondary);
+    cursor: pointer;
+}
+
+.ttra-activity-card__info strong {
+    font-family: "Genos";
+    font-size: 30px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+    color: var(--ttra-primary);
+}
+
+.ttra-activity-card__subtipo {
+    font-family: "Montserrat";
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+    color: #213975;
+    margin-left: 5px;
+}
+
+.ttra-activity-card__duration {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #213975;
+    font-family: "Montserrat";
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+.ttra-activity-card__config {
+    display: flex;
+    gap: 12px;
+    font-family: "Montserrat";
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+.ttra-activity-card__config label {
+    font-family: "Montserrat";
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 24px;
+    color: #213975;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ttra-activity-card__price {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.ttra-activity-card__icon {
+    font-size: 24px;
+    text-align: center;
+}
+
+.ttra-price {
+    font-family: "Montserrat";
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 70%;
+    color: #213975;
+    width: 160px;
+    text-align: right;
+}
+
+.ttra-price-note {
+    display: block;
+    font-size: 11px;
+    color: var(--ttra-gray-600);
+}
+
+.ttra-activity-card__pax {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 10px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #213975;
+}
+
+.ttra-pax-icon {
+    width: 25px;
+}
+
+.ttra-premium-badge {
+    display: none;
+}
+
+.ttra-premium-divider {
+    background: #27A5DE;
+    border-radius: 20px;
+    text-align: center;
+    padding: 8px 20px;
+    margin: 24px 0 12px;
+}
+
+.ttra-premium-divider__label {
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+@media (max-width: 850px) {
+    .ttra-activity-card {
+        flex-wrap: wrap;
+        padding: 16px;
+    }
+
+    .ttra-activity-card_right {
+        flex-wrap: wrap;
+    }
+
+    .ttra-activity-card__duration {
+        flex-wrap: wrap;
+    }
+
+    .ttra-activity-card__pax {
+        margin-left: 0;
+    }
+
+    .ttra-step__actions {
+        flex-direction: column;
+    }
+}
+
+/* ═══════════════════════════════════════
+   PANEL "INCLUYE"
+   ═══════════════════════════════════════ */
+.ttra-include-panel {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    padding: 10px 24px;
+    border-radius: 0 0 20px 20px;
+    margin-top: -14px;
+    animation: ttraIncludeFade 0.2s ease;
+}
+
+@keyframes ttraIncludeFade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ttra-include-panel--barcos {
+    background: #27A5DE;
+    padding: 52px 20px 25px 25px;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    top: -32px;
+    position: relative;
+}
+
+.ttra-include-panel--premium {
+    background: #27A5DE;
+    padding: 52px 20px 25px 25px;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    top: -32px;
+    position: relative;
+}
+
+.ttra-include-title {
+    color: var(--Azul-01-XPERIENCE, #213975);
+    font-family: "Montserrat";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+.ttra-include-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+    color: #213975;
+}
+
+.ttra-include-icon {
+    font-size: 15px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.ttra-include-label {
+    color: var(--Blanco, #FFF);
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+@media (max-width: 900px) {
+    .ttra-include-panel {
+        padding: 10px 16px;
+        gap: 6px 12px;
+        padding-top: 50px;
+        justify-content: center;
+    }
+
+    .ttra-activity-card_right{
+        gap: 10px !important;
+    }
+
+    .ttra-activity-card__duration{
+        width: 100%;
+        margin-top: 15px;
+    }
+}
+
+/* ═══════════════════════════════════════
+   CALENDAR
+   ═══════════════════════════════════════ */
+.ttra-calendars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.ttra-calendar-block {
+    border: 2px solid #27A5DE;
+    border-radius: 40px;
+    padding: 24px;
+    background: var(--ttra-white);
+}
+
+.ttra-calendar-block__label {
+    color: var(--Azul-01-XPERIENCE, #213975);
+    font-family: "Montserrat";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    text-align: center;
+    line-height: 24px;
+}
+
+.ttra-calendar-block__label strong {
+    color: var(--Azul-02-XPERIENCE, #27A5DE);
+    font-family: Genos;
+    font-size: 35px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+}
+
+.ttra-cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.ttra-cal-month {
+    color: var(--Azul-01-XPERIENCE, #213975);
+    text-transform: uppercase;
+    text-align: center;
+    font-family: "Genos";
+    font-size: 30px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+}
+
+/* Flechas del calendario — usando SVG externo */
+.ttra-cal-nav {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity var(--ttra-transition);
+    padding: 0;
+}
+
+.ttra-cal-nav img {
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
+    display: block;
+}
+
+/* La flecha derecha se obtiene volteando la misma imagen */
+.ttra-cal-nav--right img {
+    transform: scaleX(-1);
+}
+
+.ttra-cal-nav:hover {
+    opacity: 0.7;
+}
+
+.ttra-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.ttra-cal-day-header {
+    color: var(--Azul-01-XPERIENCE, #213975);
+    text-align: center;
+    border-top: 1px solid #706F6F;
+    border-bottom: 1px solid #706F6F;
+    font-family: "Montserrat";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 70%;
+    letter-spacing: 0.5px;
+    padding: 7px 0px;
+}
+
+.ttra-cal-day {
+    text-align: center;
+    padding: 10px 0;
+    border-radius: var(--ttra-radius-sm);
+    font-size: 14px;
+    transition: all var(--ttra-transition);
+}
+
+.ttra-cal-day--empty {
+    visibility: hidden;
+}
+
+.ttra-cal-day--available {
+    cursor: pointer;
+    color: var(--Negro-XPERIENCE, #242422);
+    text-align: center;
+    font-family: "Montserrat";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 70%;
+    letter-spacing: 0.5px;
+}
+
+.ttra-cal-day--available:hover {
+    background: var(--ttra-bg);
+    color: var(--ttra-secondary);
+}
+
+.ttra-cal-day--selected {
+    background: #27A5DE !important;
+    color: var(--ttra-white) !important;
+    font-weight: 700;
+    border-radius: 20px;
+    text-align: center;
+    font-family: "Montserrat";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 70%;
+    letter-spacing: 0.5px;
+}
+
+.ttra-cal-day--disabled {
+    opacity: 0.5;
+    cursor: default;
+    color: var(--Negro-XPERIENCE, #242422);
+    text-align: center;
+    font-family: "Montserrat";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 70%;
+    letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════
+   FORM — Paso 3
+   ═══════════════════════════════════════ */
+.ttra-form {
+    border: 2px solid #27A5DE;
+    border-radius: 40px;
+    padding: 32px;
+    background: white;
+    filter: drop-shadow(0 0 5px rgba(36, 36, 34, 0.25));
+}
+
+.ttra-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.ttra-form__field--full {
+    grid-column: 1 / -1;
+}
+
+.ttra-form__field label {
+    color: #213975;
+    font-family: "Montserrat";
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 22px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.ttra-form__field input,
+.ttra-form__field select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #706F6F;
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--ttra-gray-800);
+    transition: border-color var(--ttra-transition);
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #fff;
+}
+
+.ttra-form__field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%23213975' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+}
+
+.ttra-form__field input:focus,
+.ttra-form__field select:focus {
+    outline: none;
+    border-color: var(--ttra-secondary);
+}
+
+.ttra-input--error {
+    border-color: var(--ttra-error) !important;
+}
+
+/* Grupo de fecha de nacimiento */
+.ttra-form__date-group {
+    display: grid;
+    grid-template-columns: 80px 1fr 90px;
+    gap: 8px;
+}
+
+.ttra-form__date-group select {
+    padding: 12px 32px 12px 12px;
+    background-position: right 10px center;
+}
+
+@media (max-width: 600px) {
+    .ttra-form__row {
+        grid-template-columns: 1fr;
+    }
+
+    .ttra-form {
+        padding: 20px;
+    }
+}
+
+/* ═══════════════════════════════════════
+   PAYMENT METHODS — Paso 4
+   ═══════════════════════════════════════ */
+.ttra-payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ttra-payment-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 24px;
+    border: 2px solid #27A5DE;
+    border-radius: 40px;
+    background: white;
+    transition: all var(--ttra-transition);
+    filter: drop-shadow(0 0 5px rgba(36, 36, 34, 0.25));
+    gap: 15px;
+}
+
+.ttra-payment-option:hover {
+    border-color: var(--ttra-secondary);
+}
+
+.ttra-payment-option--selected {
+    border-color: var(--ttra-secondary);
+}
+
+.ttra-payment-option__info {
+    flex: 1;
+    align-items: center;
+}
+
+.ttra-payment-option__info strong {
+    color: #213975;
+    font-family: "Genos";
+    font-size: 30px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+    display: block;
+}
+
+.ttra-payment-option__info span {
+    color: #213975;
+    font-family: "Montserrat";
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.ttra-payment-option input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border: 1px solid #706F6F;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    transition: background .2s, border-color .2s;
+    flex-shrink: 0;
+}
+
+.ttra-payment-option input[type="radio"]:checked {
+    background: #27A5DE;
+    border-color: #27A5DE;
+}
+
+.ttra-payment-option input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 7px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+
+/* ═══════════════════════════════════════
+   SIDEBAR SUMMARY
+   ═══════════════════════════════════════ */
+.ttra-summary {
+    border: 2px solid var(--ttra-gray-200);
+    border-radius: 40px;
+    background: white;
+    padding: 28px 24px;
+    box-shadow: 0 0 5px 0 rgba(36, 36, 34, 0.25);
+}
+
+.ttra-summary__title {
+    font-family: "Genos";
+    font-size: 35px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+    color: var(--ttra-primary);
+}
+
+.ttra-summary__item {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--ttra-gray-200);
+}
+
+.ttra-summary__item-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 16px;
+    color: black;
+    margin-bottom: 8px;
+    font-family: "Montserrat";
+}
+
+.ttra-summary__item-header span:last-child {
+    color: var(--Azul-01-XPERIENCE, #213975);
+    text-align: right;
+
+    /* Mobile Text/Cat. 04 XPERIENCE (Mobile) */
+    font-family: "Genos";
+    font-size: 22px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 70%;
+    /* 15.4px */
+
+}
+
+.ttra-summary__item-detail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: black;
+    padding: 4px 0;
+    font-weight: 500;
+}
+
+.ttra-summary__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0 16px;
+}
+
+.ttra-summary__total-label {
+    font-family: "Genos";
+    font-size: 35px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+    color: #27A5DE;
+}
+
+.ttra-summary__total-price {
+    font-family: Genos;
+    font-size: 35px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+    color: #213975;
+}
+
+.ttra-trust-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.ttra-badge--trust {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: linear-gradient(0deg, rgba(39, 165, 222, 0.20), rgba(39, 165, 222, 0.20)), #FFF;
+    font-family: "Montserrat";
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 22px;
+    color: #213975;
+}
+
+/* ═══════════════════════════════════════
+   GARANTÍAS
+   ═══════════════════════════════════════ */
+.garantias {
+    display: flex;
+    gap: 16px;
+    margin: 80px 0;
+    justify-content: center;
+}
+
+.garantias__item {
+    flex: 1;
+    display: flex;
+    height: 250px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: #27A5DE;
+    border-radius: 40px;
+    padding: 28px 20px;
+    text-align: center;
+    box-shadow: 0 10px 15px -3px rgba(36, 36, 34, 0.25), 0 4px 6px -4px rgba(36, 36, 34, 0.25);
+}
+
+.garantias__icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.garantias__icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.garantias__label {
+    color: #213975;
+    text-align: center;
+    font-family: "Genos";
+    font-size: 30px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 80%;
+}
+
+@media (max-width: 900px) {
+    .garantias {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .garantias__item {
+        flex: 1 1 calc(50% - 12px);
+    }
+
+    .ttra-categories {
+        flex-wrap: wrap !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .garantias__item {
+        flex: 1 1 100%;
+    }
+}
+
+/* ═══════════════════════════════════════
+   LOADER / EMPTY
+   ═══════════════════════════════════════ */
+.ttra-loader {
+    text-align: center;
+    padding: 40px;
+    color: var(--ttra-gray-600);
+    font-size: 14px;
+}
+
+.ttra-empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--ttra-gray-400);
+}
+
+/* ═══════════════════════════════════════
+   THANK YOU
+   ═══════════════════════════════════════ */
+.ttra-confirmation {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.ttra-thankyou {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+    text-align: center;
+}
+
+.ttra-thankyou__icon {
+    font-size: 72px;
+    margin-bottom: 16px;
+    animation: ttraBounce 0.5s ease;
+}
+
+@keyframes ttraBounce {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.ttra-thankyou__title {
+    font-family: "Genos", sans-serif;
+    font-size: 52px;
+    font-style: italic;
+    font-weight: 700;
+    color: #213975;
+    line-height: 80%;
+    margin-bottom: 16px;
+}
+
+.ttra-thankyou__subtitle {
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 32px;
+    line-height: 1.5;
+}
+
+.ttra-thankyou__card {
+    background: #fff;
+    border: 2px solid #27A5DE;
+    border-radius: 24px;
+    padding: 24px 32px;
+    margin: 0 auto 24px;
+    text-align: left;
+    filter: drop-shadow(0 0 8px rgba(39, 165, 222, 0.2));
+}
+
+.ttra-thankyou__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #E8F4FD;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    color: #555;
+    gap: 16px;
+}
+
+.ttra-thankyou__row:last-child {
+    border-bottom: none;
+}
+
+.ttra-thankyou__row strong {
+    color: #213975;
+    font-size: 15px;
+    text-align: right;
+}
+
+.ttra-thankyou__code {
+    font-family: monospace !important;
+    font-size: 18px !important;
+    background: #E8F4FD;
+    padding: 4px 12px;
+    border-radius: 8px;
+    letter-spacing: 2px;
+    color: #213975 !important;
+}
+
+.ttra-thankyou__note {
+    font-family: "Montserrat", sans-serif;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    padding: 16px 20px;
+    background: rgba(39, 165, 222, 0.08);
+    border-radius: 16px;
+    border-left: 4px solid #27A5DE;
+    text-align: left;
+}
+
+.ttra-thankyou__actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+    .ttra-thankyou__title {
+        font-size: 38px;
+    }
+
+    .ttra-thankyou__card {
+        padding: 16px 20px;
+    }
+}
