@@ -1,6 +1,6 @@
 /**
  * TicTac Reservas Agua - Frontend Booking App
- * v1.3.0 — Flechas calendario SVG, selects estilizados, botón done con estado
+ * v1.3.0 — Flechas calendario SVG, selects estilizados, botón done con estadooo
  */
 
 (function () {
@@ -100,13 +100,23 @@
         },
 
         init() {
-            this.loadCategorias();
-            this.loadActividades();
-            this.bindEvents();
-            this.renderTrustBadges();
-            this.updateSummary();
-            this.fixSidebarSticky();
-        },
+    // Detectar retorno desde Redsys (URL_OK o URL_KO)
+    const urlParams = new URLSearchParams(window.location.search);
+    const ttraResult = urlParams.get('ttra_result');
+    const codigoReserva = urlParams.get('code');
+
+    if (ttraResult && codigoReserva) {
+        this.handlePaymentReturn(ttraResult, codigoReserva);
+        return; // No inicializar el flujo normal
+    }
+
+    this.loadCategorias();
+    this.loadActividades();
+    this.bindEvents();
+    this.renderTrustBadges();
+    this.updateSummary();
+    this.fixSidebarSticky();
+},
 
         fixSidebarSticky() {
             const sidebar = document.getElementById('ttra-summary');
@@ -806,20 +816,37 @@
                             result.total + ' €';
                     }
                 }
-                try {
-                    await this.api('pago/test-confirm', {
-                        method: 'POST',
-                        body: JSON.stringify({ codigo_reserva: result.codigo_reserva, metodo_pago: this.state.paymentMethod }),
-                    });
-                } catch (e) { console.warn('test-confirm error:', e); }
+// Iniciar pago real con Redsys
+const pagoData = await this.api('pago/iniciar', {
+    method: 'POST',
+    body: JSON.stringify({
+        codigo_reserva: result.codigo_reserva,
+        metodo_pago: this.state.paymentMethod,
+    }),
+});
 
-                this.showThankYou(result.codigo_reserva,
-                    formData.nombre,
-                    formData.email,
-                    result.total,
-                    result.subtotal,
-                    result.descuento
-                );
+// Debug: eliminar en producción
+console.log('pagoData recibido:', pagoData);
+
+// Detectar error de WordPress (WP_Error devuelve { code, message, data })
+if (!pagoData || pagoData.code || !pagoData.Ds_MerchantParameters || !pagoData.Ds_Signature) {
+    const errMsg = pagoData && pagoData.message
+        ? pagoData.message
+        : 'Error al generar el formulario de pago. Comprueba la configuración de Redsys.';
+    alert(errMsg);
+    if (btn) { btn.disabled = false; btn.textContent = ttra_config.i18n.finalizar; }
+    return;
+}
+
+// Rellenar el formulario oculto y redirigir al TPV
+var redsysForm = document.getElementById('ttra-redsys-form');
+redsysForm.action = pagoData.url;
+redsysForm.querySelector('[name="Ds_SignatureVersion"]').value   = 'HMAC_SHA256_V1';
+redsysForm.querySelector('[name="Ds_MerchantParameters"]').value = pagoData.Ds_MerchantParameters;
+redsysForm.querySelector('[name="Ds_Signature"]').value          = pagoData.Ds_Signature.replace(/\+/g, '%2B');
+
+console.log('Enviando a Redsys:', redsysForm.action);
+redsysForm.submit();
             } catch (error) {
                 console.error(error);
                 alert('Ha ocurrido un error. Por favor, inténtalo de nuevo.');
@@ -861,6 +888,127 @@
             const si = document.getElementById('ttra-summary-items');
             if (si) si.innerHTML = '';
         },
+
+        async handlePaymentReturn(resultado, codigo) {
+    // Ocultar todos los pasos y el sidebar
+    document.querySelectorAll('.ttra-step').forEach(s => s.classList.add('ttra-step--hidden'));
+    document.getElementById('ttra-summary')?.style.setProperty('display', 'none');
+    document.querySelector('.ttra-stepper')?.style.setProperty('display', 'none');
+
+    // Marcar stepper como completado
+    document.querySelectorAll('.ttra-stepper__step').forEach(el => {
+        el.classList.remove('ttra-stepper__step--active');
+        el.classList.add('ttra-stepper__step--completed');
+    });
+
+    if (resultado === 'ko') {
+        // Pago fallido o cancelado
+        const confirmDiv = document.getElementById('ttra-step-confirm');
+        const confirmBody = document.getElementById('ttra-confirmation');
+        if (confirmDiv && confirmBody) {
+            confirmBody.innerHTML = `
+            <div class="ttra-thankyou">
+                <div class="ttra-thankyou__icon">❌</div>
+                <h2 class="ttra-thankyou__title">Pago no completado</h2>
+                <p class="ttra-thankyou__subtitle">El pago no se ha podido procesar o fue cancelado.</p>
+                <p class="ttra-thankyou__note">
+                    Tu reserva <strong>${codigo}</strong> ha quedado pendiente.<br>
+                    Si el problema persiste, contacta con nosotros.
+                </p>
+                <div class="ttra-thankyou__actions">
+                    <button class="ttra-btn ttra-btn--primary" onclick="window.location.href=window.location.pathname">
+                        Intentar de nuevo
+                    </button>
+                </div>
+            </div>`;
+            confirmDiv.classList.remove('ttra-step--hidden');
+        }
+        // Limpiar parámetros de la URL sin recargar
+        window.history.replaceState({}, '', window.location.pathname);
+        return;
+    }
+
+    // Resultado OK — cargar datos de la reserva
+    const confirmDiv = document.getElementById('ttra-step-confirm');
+    const confirmBody = document.getElementById('ttra-confirmation');
+    if (!confirmDiv || !confirmBody) return;
+
+    confirmBody.innerHTML = '<div class="ttra-loader">⏳ Cargando confirmación...</div>';
+    confirmDiv.classList.remove('ttra-step--hidden');
+
+    try {
+        const reserva = await this.api('reservas/' + codigo);
+
+        if (!reserva || !reserva.codigo) {
+            throw new Error('Reserva no encontrada');
+        }
+
+        const descuento = parseFloat(reserva.total) < parseFloat(reserva.total) ? 0 : 0; // placeholder
+        confirmBody.innerHTML = `
+        <div class="ttra-thankyou">
+            <div class="ttra-thankyou__icon">✅</div>
+            <h2 class="ttra-thankyou__title">¡Reserva confirmada!</h2>
+            <p class="ttra-thankyou__subtitle">
+                Gracias, <strong>${reserva.nombre}</strong>.<br>
+                Tu pago ha sido procesado correctamente.
+            </p>
+            <div class="ttra-thankyou__card">
+                <div class="ttra-thankyou__row">
+                    <span>Código de reserva</span>
+                    <strong class="ttra-thankyou__code">${reserva.codigo}</strong>
+                </div>
+                <div class="ttra-thankyou__row">
+                    <span>Total pagado</span>
+                    <strong>${parseFloat(reserva.total).toFixed(2).replace('.', ',')} €</strong>
+                </div>
+                <div class="ttra-thankyou__row">
+                    <span>Estado</span>
+                    <strong style="color:#22c55e">✅ Pagada</strong>
+                </div>
+                ${reserva.lineas && reserva.lineas.length ? `
+                <div class="ttra-thankyou__row" style="flex-direction:column;align-items:flex-start;gap:6px">
+                    <span style="font-weight:700;color:#213975;margin-bottom:4px">Actividades</span>
+                    ${reserva.lineas.map(l => `
+                        <div style="font-size:13px;color:#333;padding:4px 0;border-bottom:1px solid #E8F4FD;width:100%">
+                            <strong>${l.actividad_nombre || ''}</strong>
+                            ${l.fecha ? ' · ' + l.fecha : ''}
+                            ${l.hora ? ' · ' + l.hora.substring(0,5) + ' h' : ''}
+                            ${l.personas ? ' · ' + l.personas + ' pax' : ''}
+                        </div>
+                    `).join('')}
+                </div>` : ''}
+            </div>
+            <p class="ttra-thankyou__note">
+                📧 Hemos enviado un email con todos los detalles a tu correo.<br>
+                Si no lo recibes en unos minutos, revisa tu carpeta de spam.
+            </p>
+            <div class="ttra-thankyou__actions">
+                <button class="ttra-btn ttra-btn--primary" onclick="window.location.href=window.location.pathname">
+                    Realizar otra reserva
+                </button>
+            </div>
+        </div>`;
+
+    } catch(e) {
+        confirmBody.innerHTML = `
+        <div class="ttra-thankyou">
+            <div class="ttra-thankyou__icon">✅</div>
+            <h2 class="ttra-thankyou__title">¡Pago realizado!</h2>
+            <p class="ttra-thankyou__subtitle">Tu reserva <strong>${codigo}</strong> ha sido procesada.</p>
+            <p class="ttra-thankyou__note">
+                📧 Recibirás un email de confirmación en breve.
+            </p>
+            <div class="ttra-thankyou__actions">
+                <button class="ttra-btn ttra-btn--primary" onclick="window.location.href=window.location.pathname">
+                    Realizar otra reserva
+                </button>
+            </div>
+        </div>`;
+    }
+
+    // Limpiar parámetros de la URL sin recargar
+    window.history.replaceState({}, '', window.location.pathname);
+},
 
         buildFechaNacimiento(form) {
             const d = form.querySelector('[name="nacimiento_dia"]').value;

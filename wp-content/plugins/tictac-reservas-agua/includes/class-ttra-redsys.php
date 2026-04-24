@@ -145,23 +145,44 @@ class TTRA_Redsys {
      * 3. HMAC-SHA256 de Ds_MerchantParameters con la clave derivada del paso 2
      * 4. Resultado en Base64
      */
-    private function firmar( $params_base64, $order_id ) {
-        // ✅ La clave guardada en ajustes ES Base64 — hay que decodificarla antes del 3DES
-        $key = base64_decode( $this->clave_secreta );
+private function firmar( $params_base64, $order_id ) {
+    $clave = $this->clave_secreta;
 
-        // Cifrar order_id con 3DES-CBC, IV = 8 bytes a cero
-        $iv          = "\x00\x00\x00\x00\x00\x00\x00\x00";
-        $clave_order = openssl_encrypt( $order_id, 'DES-EDE3-CBC', $key, OPENSSL_RAW_DATA, $iv );
-
-        if ( $clave_order === false ) {
-            error_log( 'TTRA Redsys: openssl_encrypt falló: ' . openssl_error_string() );
-            return '';
-        }
-
-        // HMAC-SHA256 y Base64
-        $hmac = hash_hmac( 'sha256', $params_base64, $clave_order, true );
-        return base64_encode( $hmac );
+    // Intentar decodificar en Base64. Si el resultado tiene longitud 16 o 24
+    // bytes (claves 3DES válidas), usar el decodificado. Si no, usar en crudo.
+    $decoded = base64_decode( $clave, true );
+    if ( $decoded !== false && ( strlen($decoded) === 16 || strlen($decoded) === 24 ) ) {
+        $key = $decoded;
+    } else {
+        // La clave ya está en texto plano (ej: sq7HjrUOBfKmC576ILgskD5srU870gJ7)
+        $key = $clave;
     }
+
+    // Pad del order_id a múltiplo de 8 bytes con \0
+    $block_size   = 8;
+    $pad_length   = $block_size - ( strlen($order_id) % $block_size );
+    if ( $pad_length === $block_size ) $pad_length = 0;
+    $order_padded = $order_id . str_repeat( "\0", $pad_length );
+
+    // 3DES-CBC con IV = 8 bytes a cero y sin padding adicional de OpenSSL
+    $iv          = "\x00\x00\x00\x00\x00\x00\x00\x00";
+    $clave_order = openssl_encrypt(
+        $order_padded,
+        'DES-EDE3-CBC',
+        $key,
+        OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
+        $iv
+    );
+
+    if ( $clave_order === false ) {
+        error_log( 'TTRA Redsys firmar() error: ' . openssl_error_string() );
+        return '';
+    }
+
+    // HMAC-SHA256 del Ds_MerchantParameters con la clave diversificada
+    $hmac = hash_hmac( 'sha256', $params_base64, $clave_order, true );
+    return base64_encode( $hmac );
+}
 
     private function base64url( $b64 ) {
         return strtr( rtrim( $b64, '=' ), '+/', '-_' );

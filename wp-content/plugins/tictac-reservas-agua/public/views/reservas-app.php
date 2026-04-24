@@ -219,10 +219,10 @@ if (! defined('ABSPATH')) exit;
 
     <!-- Form oculto para redirigir a Redsys -->
     <form id="ttra-redsys-form" method="POST" style="display:none;">
-        <input type="hidden" name="Ds_SignatureVersion">
-        <input type="hidden" name="Ds_MerchantParameters">
-        <input type="hidden" name="Ds_Signature">
-    </form>
+    <input type="hidden" name="Ds_SignatureVersion">
+    <input type="hidden" name="Ds_MerchantParameters">
+    <input type="hidden" name="Ds_Signature">
+</form>
 
 <?php $uploads = wp_upload_dir()['baseurl'] . '/2026/04/'; ?>
 
